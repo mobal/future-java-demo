@@ -1,2 +1,2 @@
 # future-java-demo
-A Java application demonstrating how the future works
+An async Java application with futures
