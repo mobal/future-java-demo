@@ -38,7 +38,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass = 'hu.netcode.futurejavademo.App'
+    mainClass = 'hu.netcode.futurejavademo.CompletableFutureDemo'
 }
 
 tasks.named('test') {
