@@ -14,9 +14,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 public class DuckDuckGo {
+    private static final Logger LOGGER = LogManager.getLogger(DuckDuckGo.class);
+
     private static final String DUCK_DUCK_GO_API_BASE_URL = "https://api.duckduckgo.com";
 
-    private final Logger LOGGER = LogManager.getLogger(DuckDuckGo.class);
     private final ObjectMapper objectMapper;
     private final OkHttpClient client;
 
