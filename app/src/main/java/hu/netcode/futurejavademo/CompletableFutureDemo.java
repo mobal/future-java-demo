@@ -24,13 +24,13 @@ public class CompletableFutureDemo {
 
     public static void main(String[] args) {
         final Instant start = Instant.now();
-        final DuckDuckGo ddg = new DuckDuckGo();
+        final DuckDuckGo duck = new DuckDuckGo();
         try {
             final List<CompletableFuture<String>> futureList = Files.readAllLines(
                     Path.of(Objects.requireNonNull(CompletableFutureDemo.class.getClassLoader()
                             .getResource("car_brands.txt")).toURI()))
                     .stream()
-                    .map(ddg::searchAsync)
+                    .map(duck::searchAsync)
                     .collect(Collectors.toList());
             CompletableFuture.allOf(futureList.toArray(CompletableFuture[]::new))
                     .thenApply(v -> futureList.stream().map(CompletableFuture::join).collect(Collectors.toList()))
