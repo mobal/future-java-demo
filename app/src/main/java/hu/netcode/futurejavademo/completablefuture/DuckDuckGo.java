@@ -19,12 +19,11 @@ public class DuckDuckGo {
     private static final String DUCK_DUCK_GO_API_BASE_URL = "https://api.duckduckgo.com";
 
     private final ObjectMapper objectMapper;
-    private final OkHttpClient client;
+    private final OkHttpClient okHttpClient;
 
-    public DuckDuckGo() {
-        objectMapper = new ObjectMapper()
-                .findAndRegisterModules();
-        client = new OkHttpClient();
+    public DuckDuckGo(ObjectMapper objectMapper, OkHttpClient okHttpClient) {
+        this.objectMapper = objectMapper;
+        this.okHttpClient = okHttpClient;
     }
 
     public CompletableFuture<String> searchAsync(String searchWord) {
@@ -50,11 +49,11 @@ public class DuckDuckGo {
                 "pretty", "1"));
         LOGGER.debug(request);
         try {
-            try (Response response = client.newCall(request).execute()) {
+            try (Response response = okHttpClient.newCall(request).execute()) {
                 if (response.isSuccessful()) {
                     return Objects.requireNonNull(response.body()).string();
                 } else {
-                    LOGGER.error(response.body());
+                    LOGGER.error(Objects.requireNonNull(response.body()).string());
                 }
             }
         } catch (IOException ex) {
