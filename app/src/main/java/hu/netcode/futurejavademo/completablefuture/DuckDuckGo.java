@@ -51,9 +51,9 @@ public class DuckDuckGo {
         try {
             try (Response response = okHttpClient.newCall(request).execute()) {
                 if (response.isSuccessful()) {
-                    return Objects.requireNonNull(response.body()).string();
+                    return response.body().string();
                 } else {
-                    LOGGER.error(Objects.requireNonNull(response.body()).string());
+                    LOGGER.error(response.body().string());
                 }
             }
         } catch (IOException ex) {

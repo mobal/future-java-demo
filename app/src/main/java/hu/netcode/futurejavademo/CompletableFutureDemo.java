@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 public class CompletableFutureDemo {
@@ -42,7 +43,7 @@ public class CompletableFutureDemo {
                 }
             }));
             LOGGER.info("{} ms", Duration.between(start, Instant.now()).toMillisPart());
-        } catch (IOException | URISyntaxException ex) {
+        } catch (CompletionException | IOException | URISyntaxException ex) {
             LOGGER.error(ExceptionUtils.getMessage(ex));
             System.exit(-1);
         }

@@ -1,5 +1,8 @@
 package hu.netcode.futurejavademo.completablefuture;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import org.junit.jupiter.api.*;
@@ -9,9 +12,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.util.concurrent.CompletionException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(value = MockitoExtension.class)
@@ -25,6 +29,10 @@ public class DuckDuckGoTest {
     private Request requestMock;
     @Mock
     private Request.Builder requestBuilderMock;
+    @Mock
+    private Response responseMock;
+    @Mock
+    private ResponseBody responseBodyMock;
 
     private ObjectMapper objectMapper;
 
@@ -36,7 +44,7 @@ public class DuckDuckGoTest {
 
     @BeforeEach
     void init() {
-        //
+        Mockito.reset(callMock, okHttpClientMock, requestMock, requestBuilderMock, responseMock, responseBodyMock);
     }
 
     @DisplayName(value = "DuckDuckGo: Test for function search")
@@ -46,8 +54,6 @@ public class DuckDuckGoTest {
         @DisplayName(value = "Successful search")
         @Test
         void successfulSearch() throws IOException {
-            ResponseBody responseBodyMock = Mockito.mock(ResponseBody.class);
-            Response responseMock = Mockito.mock(Response.class);
             when(callMock.execute()).thenReturn(responseMock);
             when(okHttpClientMock.newCall(any())).thenReturn(callMock);
             when(responseBodyMock.string()).thenReturn("{}");
@@ -62,8 +68,6 @@ public class DuckDuckGoTest {
         @DisplayName(value = "Search failed because of an Internal Server Error")
         @Test
         void searchFailedBecauseOfAnInternalServerError() throws IOException {
-            ResponseBody responseBodyMock = Mockito.mock(ResponseBody.class);
-            Response responseMock = Mockito.mock(Response.class);
             when(callMock.execute()).thenReturn(responseMock);
             when(okHttpClientMock.newCall(any())).thenReturn(callMock);
             when(responseBodyMock.string()).thenReturn("Internal Server Error");
@@ -91,10 +95,35 @@ public class DuckDuckGoTest {
     @Nested
     @TestInstance(value = TestInstance.Lifecycle.PER_CLASS)
     class SearchAsync {
-        @DisplayName(value = "Successfully search async")
+        @DisplayName(value = "Successful async search")
         @Test
-        void successfulAsyncSearch() {
-            assertTrue(true);
+        void successfulAsyncSearch() throws IOException {
+            when(callMock.execute()).thenReturn(responseMock);
+            when(okHttpClientMock.newCall(any())).thenReturn(callMock);
+            when(responseBodyMock.string()).thenReturn("{}");
+            when(responseMock.body()).thenReturn(responseBodyMock);
+            when(responseMock.isSuccessful()).thenReturn(true);
+            DuckDuckGo duck = new DuckDuckGo(objectMapper, okHttpClientMock);
+            String result = duck.searchAsync("apple").join();
+            assertNotNull(result);
+            assertEquals("{}", result);
+        }
+
+        @DisplayName(value = "Async search failed because of a JsonProcessingException")
+        @Test
+        void searchFailedBecauseOfAJsonProcessingException() throws IOException {
+            ObjectMapper objectMapperMock = Mockito.mock(ObjectMapper.class);
+            when(callMock.execute()).thenReturn(responseMock);
+            when(objectMapperMock.readValue(anyString(), eq(JsonNode.class)))
+                    .thenThrow(new JsonProcessingException("error"){});
+            when(okHttpClientMock.newCall(any())).thenReturn(callMock);
+            when(responseBodyMock.string()).thenReturn("{}");
+            when(responseMock.body()).thenReturn(responseBodyMock);
+            when(responseMock.isSuccessful()).thenReturn(true);
+            DuckDuckGo duck = new DuckDuckGo(objectMapperMock, okHttpClientMock);
+            assertThrows(CompletionException.class, () -> {
+                duck.searchAsync("apple").join();
+            });
         }
     }
 }
