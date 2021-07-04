@@ -23,10 +23,10 @@ public class CompletableFutureDemo {
     private static final Logger LOGGER = LogManager.getLogger(CompletableFutureDemo.class);
 
     public static void main(String[] args) {
-        final Instant start = Instant.now();
-        final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-        final OkHttpClient okHttpClient = new OkHttpClient();
-        final DuckDuckGo duck = new DuckDuckGo(objectMapper, okHttpClient);
+        final var start = Instant.now();
+        final var objectMapper = new ObjectMapper().findAndRegisterModules();
+        final var okHttpClient = new OkHttpClient();
+        final var duck = new DuckDuckGo(objectMapper, okHttpClient);
         try {
             final List<CompletableFuture<String>> futureList = Files.readAllLines(
                     Path.of(Objects.requireNonNull(CompletableFutureDemo.class.getClassLoader()

@@ -45,15 +45,17 @@ public class DuckDuckGo {
     }
 
     public String search(String searchWord) {
-        Request request = getRequest(DUCK_DUCK_GO_API_BASE_URL, Map.of("q", searchWord, "format", "json",
+        var request = getRequest(DUCK_DUCK_GO_API_BASE_URL, Map.of("q", searchWord, "format", "json",
                 "pretty", "1"));
         LOGGER.debug(request);
         try {
-            try (Response response = okHttpClient.newCall(request).execute()) {
+            try (var response = okHttpClient.newCall(request).execute()) {
                 if (response.isSuccessful()) {
-                    return response.body().string();
+                    try (var body = response.body()) {
+                        return body != null ? body.string() : "";
+                    }
                 } else {
-                    LOGGER.error(response.body().string());
+                    LOGGER.error("Request failed {}", response.code());
                 }
             }
         } catch (IOException ex) {
@@ -70,7 +72,7 @@ public class DuckDuckGo {
     }
 
     private Request getRequest(String url, Map<String, String> queryList) {
-        HttpUrl.Builder httpUrlBuilder = Objects.requireNonNull(HttpUrl.parse(url))
+        var httpUrlBuilder = Objects.requireNonNull(HttpUrl.parse(url))
                 .newBuilder();
         queryList.forEach(httpUrlBuilder::addQueryParameter);
                 return getRequest(httpUrlBuilder.build().toString());

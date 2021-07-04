@@ -70,8 +70,7 @@ public class DuckDuckGoTest {
         void searchFailedBecauseOfAnInternalServerError() throws IOException {
             when(callMock.execute()).thenReturn(responseMock);
             when(okHttpClientMock.newCall(any())).thenReturn(callMock);
-            when(responseBodyMock.string()).thenReturn("Internal Server Error");
-            when(responseMock.body()).thenReturn(responseBodyMock);
+            when(responseMock.code()).thenReturn(500);
             when(responseMock.isSuccessful()).thenReturn(false);
             DuckDuckGo duck = new DuckDuckGo(objectMapper, okHttpClientMock);
             String result = duck.search("apple");
