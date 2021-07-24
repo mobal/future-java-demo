@@ -27,8 +27,8 @@ public class CompletableFutureDemo {
         final var okHttpClient = new OkHttpClient();
         final var stopWatch = new StopWatch();
         final var duck = new DuckDuckGo(objectMapper, okHttpClient);
-        stopWatch.start();
         try {
+            stopWatch.start();
             final List<CompletableFuture<String>> futureList = CompletableFuture.supplyAsync(() -> {
                 try {
                     return Files.readAllLines(
